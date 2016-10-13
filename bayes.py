@@ -21,6 +21,7 @@ def words_textblob(text):
     neg = ["not", "n't", "no"]
 
     negation = False
+    """
     blob = TextBlob(text)
 
     for word in blob.tokens:
@@ -34,6 +35,12 @@ def words_textblob(text):
 
             if w in punctuation:
                 negation = False
+    """
+
+    for word in text.split (' '):
+        w = word.strip().strip (',.!;?').lower()
+        if w:
+            yield w
 
 #ez a függvény a bemenetén kapott szöveget szóközök mentén, az írásjeleket figyelembe véve, visszatér a szavak listájával
 def words_custom(text):
@@ -42,9 +49,6 @@ def words_custom(text):
         # If there is a word after stripping, and it is not an HTML tag, then yield it.
         if w and not re.match("<.*>", w):
             yield w
-
-
-
 
 
 
@@ -131,7 +135,7 @@ def main():
     bt = NaiveBayes()
 
     mode = "custom"
-    type = "testasa"
+    type = sys.argv[1]
 
     if mode == "custom":
         bt.words = words_custom            # feldarabolja a szöveget egy szólistává
@@ -141,15 +145,23 @@ def main():
         db_name = "db_textblob.db"      # elnevezzük az adatbázist
 
     if type == "train":
-        train(bt, "train.txt")      #a betanítószöveget odaadjuk a Bayes modellnek
+        train(bt, sys.argv[2])      #a betanítószöveget odaadjuk a Bayes modellnek
         bt.dump(db_name)
     elif type == "test":
         bt.load(db_name)        #ha már betanulta, akkor jöhet a tesztelés
-        test(bt, "test.txt", mode + "_result.txt")      #tesztelés eredménye a result fileban lesz
+        test(bt, sys.argv[2])#, mode + "_result.txt")      #tesztelés eredménye a result fileban lesz
     else:
     	bt.load(db_name)        #ha már betanulta, akkor jöhet a tesztelés
-    	print (bt.classify (sys.argv[1]))
+    	print (bt.classify (sys.argv[2]))
 
 
 if __name__ == '__main__':
     main()
+
+
+
+
+# küldeni:
+#   pdf
+#   gellért szálló
+#   semleges
